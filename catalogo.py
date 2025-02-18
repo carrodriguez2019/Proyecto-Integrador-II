@@ -45,13 +45,15 @@ class GestorCategorias:
         return []
     
     def agregar_categorias(self,nombre):
+       
+        self.categorias =  self.leer_categorias()
+        
         # Verificar si la nueva categoría ya existe
         categoria_existe = any(categoria.nombre.lower() == nombre.lower() for categoria in self.categorias)
         if categoria_existe:         
             limpiar_pantalla()
             mostrar_titulo()                         
-            print(f"La categoría ingresada: '{nombre}' ya existe.")
-            self.categoria_nueva()        
+            print(f"La categoría ingresada: '{nombre}' ya existe.")           
             
         else:
             try:
@@ -99,10 +101,11 @@ class GestorCategorias:
                 print('El valor ingresado no es válido. Por favor ingrese un número de categoría válido.') 
                 continue
     
-    def categoria_nueva(self):        
-        gestor = GestorCategorias(ruta_archivo)
+    def categoria_nueva(self):      
+        
         
         while True: 
+            gestor = GestorCategorias(ruta_archivo)
             gestor.imprimir_categorias()           
             opciones()           
             opcion = input("Seleccione una opción: ")
@@ -116,7 +119,10 @@ class GestorCategorias:
                 mostrar_titulo()     
                 print(f"Ha seleccionado la categoría: '{categoria}'") 
                 print(f"A continuacion se mostraran las opciones disponibles para realizar en esta categoria")                                      
-                menu_opciones(categoria.strip())                                
+                valor = menu_opciones(categoria.strip())  
+                self.categorias = self.leer_categorias()          
+                
+                               
             elif opcion == '3':
                 print("Saliendo del programa. ¡Hasta luego!")
                 sys.exit()

@@ -157,8 +157,9 @@ class GestorCSV: #CatalogoPelicula
         self.cargar_datos_categorias()
         self.datos_categoria = self.datos_categoria[self.datos_categoria['Categoria'].str.lower() != categoria.lower()]
         self.guardar_categorias()
-        self.eliminar_peliculas_por_categoria(categoria)         
-        print(f"La categoría '{categoria}' y las películas relacionadas han sido eliminadas del catálogo.")     
+        self.eliminar_peliculas_por_categoria(categoria)  
+              
+            
         
 
 
@@ -173,13 +174,43 @@ def menu_opciones(categoria):
         opcion = input("Seleccione una opción: ").strip()
             
         if opcion == '1':
-            print(f"Acontinuacion los datos para agregar una película a la categoría '{categoria}'.")           
-            titulo = input("Título: ")
-            año = input("Año: ")
-            duracion = input("Duracion: ")
-            clasificacion = input("Clasificacion: ")
+            print(f"Acontinuacion los datos para agregar una película a la categoría '{categoria}'.")   
+            #Validar Titulo        
+            titulo = input("Título: ")            
+            while not titulo.strip():
+                print("El título no puede estar vacío.")
+                titulo = input("Título: ").capitalize()
+            #Validar año
+            año = input("Año: ")           
+            while not año.isdigit() or not (1960 <= int(año) <= 2025):
+                print("Por favor, ingrese un año válido entre 1960 y 2025.")
+                año = input("Año: ")
+             #Validar Duracion
+            duracion = input("Duracion (en minutos): ")
+            while not duracion.isdigit() or int(duracion) <= 0:
+                print("Por favor, ingrese una duración válida en minutos.")
+                duracion = input("Duración (en minutos): ")            
+            # Verifica que la calificación sea un número decimal y esté dentro del rango permitido
+            while True:
+                # Solicita una nueva entrada del usuario
+                calificacion = input("Calificación (0.0-10.0): ")
+                try:
+                    calificacion_float = float(calificacion)
+                    # Evalúa si la calificación está fuera del rango permitido
+                    if calificacion_float < 0.0 or calificacion_float > 10.0:
+                        print("Por favor, ingrese una calificación válida entre 0.0 y 10.0.")
+                    else:
+                        break                
+                except ValueError:
+                    print("Por favor, ingrese un número decimal válido.") 
+                 
+   
+            # Validar detalles (enlace de IMDb)
             detalles = input("Ingrese el enlace de imdb relacionado con la pelicula: ")
-            nueva_pelicula = Pelicula(categoria.capitalize(), titulo, año, duracion, clasificacion, detalles)
+            while not detalles.startswith("https://"):
+                print("Por favor, ingrese un enlace válido que comience con 'https://'.")
+                detalles = input("Ingrese el enlace de IMDb relacionado con la película: ")
+            nueva_pelicula = Pelicula(categoria.capitalize(), titulo, año, duracion, calificacion, detalles)
             gestor.agregar_pelicula(nueva_pelicula)    
                     
         elif opcion == '2':           
@@ -190,8 +221,11 @@ def menu_opciones(categoria):
             gestor.eliminar_categoria(categoria)
             limpiar_pantalla()
             mostrar_titulo()  
-            return
+            print(f"La categoría '{categoria}' y las películas relacionadas han sido eliminadas del catálogo.") 
+            return 1
         elif opcion == '4':
+            limpiar_pantalla()
+            mostrar_titulo() 
             return
         else:
             print("Opción no válida. Por favor, ingrese un número del 1 al 4.")
